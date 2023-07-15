@@ -20,7 +20,7 @@ module.exports = {
         .setRequired(true)
     )
     .addUserOption(option =>
-      option.setName('contratante')
+      option.setName('recrutador')
         .setDescription('Quem contratou a pessoa')
         .setRequired(true)
     ),
@@ -28,7 +28,7 @@ module.exports = {
   async execute(interaction) {
     const nome = interaction.options.getString('nome');
     const id = interaction.options.getString('id');
-    const contratante = interaction.options.getUser('contratante');
+    const recrutador = interaction.options.getUser('recrutador');
     const tagRoleId = process.env.TAG_ROLE_ID; // ID do cargo da tag
     const responseChannelId = process.env.RESPONSE_CHANNEL_ID; // ID do canal para a resposta
     const allowedChannelId = process.env.ALLOWED_CHANNEL_ID; // ID do canal permitido
@@ -55,11 +55,12 @@ module.exports = {
     await interaction.member.roles.add(tagRole);
     console.log(`A Tag "${tagRole.name}" foi adicionada para o usuário ${interaction.member.user.tag}`);
 
-    interaction.reply(`Seja Bem-Vindo a Mafia ${nome}, leia nossas regras e respeite a hierarquia e bom jogo seu randola!!!`).then(reply => {
+    interaction.reply(`**Seja Bem-Vindo à Mafia ${nome}!**\n\nLeia nossas regras e respeite a hierarquia. Divirta-se e tenha um bom jogo, seu RANDOLAAAAAA!!!`).then(reply => {
       setTimeout(() => {
         reply.delete().catch(console.error);
-      }, 30000); // 10 segundos (em milissegundos)
+      }, 20000); // 20 segundos (em milissegundos)
     });
+
 
     // Obter o canal de destino para o registro
     const responseChannel = interaction.guild.channels.cache.get(responseChannelId);
@@ -71,15 +72,15 @@ module.exports = {
     const mentionedNome = interaction.member.toString(); // Menção ao nome do usuário
 
     // Incrementa o contador de menções do recrutador
-    if (!mentions[contratante.tag]) {
-      mentions[contratante.tag] = 1;
+    if (!mentions[recrutador.tag]) {
+      mentions[recrutador.tag] = 1;
     } else {
-      mentions[contratante.tag]++;
+      mentions[recrutador.tag]++;
     }
 
     // Obtém o número de menções do recrutador
-    const numMensoes = mentions[contratante.tag];
+    const numMensoes = mentions[recrutador.tag];
 
-    responseChannel.send(`**Nome:** ${mentionedNome}\n**ID:** ${id}\n**Recrutador:** ${contratante}\n**Recrutamentos:** ${numMensoes}`);
+    responseChannel.send(`**Nome:** ${mentionedNome}\n**ID:** ${id}\n**Recrutador:** ${recrutador}\n**Recrutamentos:** ${numMensoes}`);
   },
 };
