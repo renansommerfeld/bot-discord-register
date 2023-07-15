@@ -2,6 +2,9 @@ const { SlashCommandBuilder, MessageEmbed, User } = require('discord.js');
 const dotenv = require('dotenv');
 dotenv.config();
 
+// Objeto para armazenar as menções dos recrutadores
+const mentions = {};
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('registro')
@@ -32,7 +35,7 @@ module.exports = {
 
     if (interaction.channelId !== allowedChannelId) {
       const allowedChannel = interaction.guild.channels.cache.get(allowedChannelId);
-      return interaction.reply(`Este comando só pode ser executado no canal ${allowedChannel}`).catch(console.error);
+      return interaction.reply(`A safadinho, esse comando só pode ser executado no canal ${allowedChannel}`).catch(console.error);
     }
 
     const tagRole = interaction.guild.roles.cache.get(tagRoleId);
@@ -50,12 +53,12 @@ module.exports = {
 
     // Adicionar a tag
     await interaction.member.roles.add(tagRole);
-    console.log(`Tag "${tagRole.name}" adicionada para o usuário ${interaction.member.user.tag}`);
+    console.log(`A Tag "${tagRole.name}" foi adicionada para o usuário ${interaction.member.user.tag}`);
 
-    interaction.reply(`Nome atualizado para ${nome} | ${id}`).then(reply => {
+    interaction.reply(`Seja Bem-Vindo a Mafia ${nome}, leia nossas regras e respeite a hierarquia e bom jogo seu randola!!!`).then(reply => {
       setTimeout(() => {
         reply.delete().catch(console.error);
-      }, 10000); // 10 segundos (em milissegundos)
+      }, 30000); // 10 segundos (em milissegundos)
     });
 
     // Obter o canal de destino para o registro
@@ -65,6 +68,18 @@ module.exports = {
       return interaction.reply('O ID do canal de resposta é inválido.');
     }
 
-    responseChannel.send(`Usuário ${interaction.member.user.tag} atualizou o nome para [M] ${nome} | ${id}. Contratante: ${contratante}`);
+    const mentionedNome = interaction.member.toString(); // Menção ao nome do usuário
+
+    // Incrementa o contador de menções do recrutador
+    if (!mentions[contratante.tag]) {
+      mentions[contratante.tag] = 1;
+    } else {
+      mentions[contratante.tag]++;
+    }
+
+    // Obtém o número de menções do recrutador
+    const numMensoes = mentions[contratante.tag];
+
+    responseChannel.send(`**Nome:** ${mentionedNome}\n**ID:** ${id}\n**Recrutador:** ${contratante}\n**Recrutamentos:** ${numMensoes}`);
   },
 };
